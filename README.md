@@ -22,10 +22,10 @@ Easy:
  * `source`: Full path to the access log you want to replay
  * `speedupFactor`: Speed at which log is replayed (ie: 2 = twice normal speed) 
  * `target`: Specifies the target of the load testing
- * * `host`: hostname of target machine
- * * `port`: target port (for SSL, only 443 is supported)
+     * `host`: hostname of target machine
+     * `port`: target port (for SSL, only 443 is supported)
 
-4. Run the profile you created (the <something> you chose in #3)
+4. Run the profile you created (the `<something>` you chose in #3)
 
        ```node replay.js <something>```
 
