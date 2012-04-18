@@ -85,6 +85,10 @@ Lazy(logfile.stdout)
 
         console.log("Executing...\n\n");
 
+        var timings = new Array();
+        var reqSeq = 0;
+
+
         // RUN ZE TEST!
         var execStart = Date.now();
         var interval = setInterval(function() {
@@ -104,13 +108,20 @@ Lazy(logfile.stdout)
 
                 // FIRE ZE MISSILES!!...er, requests, I mean
                 requestSet[runOffset].forEach(function(item){
+                    var reqNum = reqSeq++;
                     var req = http.request({
                             host: config.target.host,
                             port: config.target.port,
                             path: item.uri,
-                            method: item.method
+                            method: item.method,
+                            reqStart: new Date().getTime()
                         }, 
                         function(resp) {}
+                    )
+                    .on('socket', function() { timings[reqNum] = new Date().getTime(); })
+                    .on('response', function(resp) {
+                        var diff = (new Date().getTime()) - timings[reqNum];
+                        console.log(' - #' + reqNum + ' [DT=' + diff + 'ms, R=' + resp.statusCode + ']'); }
                     );
                     req.end();
                 });
