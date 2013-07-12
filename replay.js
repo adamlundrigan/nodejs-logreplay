@@ -114,7 +114,8 @@ Lazy(logfile.stdout)
                             port: config.target.port,
                             path: item.uri,
                             method: item.method,
-                            reqStart: new Date().getTime()
+                            reqStart: new Date().getTime(),
+                            agent: false
                         }, 
                         function(resp) {}
                     )
