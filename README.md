@@ -15,6 +15,7 @@ Easy:
 1. Install Node.js and the following packages from npm:
  * lazy
  * konphyg
+ * colors
 
 2. Clone this repository onto the server you wish to launch your load test requests from
 

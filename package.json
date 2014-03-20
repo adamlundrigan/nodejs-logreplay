@@ -1,0 +1,26 @@
+{
+  "name": "nodejs-logreplay",
+  "version": "0.1.0",
+  "author": "Adam Lundrigan <adam@lundrigan.ca>",
+  "description": "Replay Apache access logs, Node.js style",
+  "contributors": [ 
+    {
+      "name": "Brian H Mayo",
+      "email": "brian.h.mayo@gmail.com"
+    } 
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/brianhmayo/nodejs-logreplay.git"
+  },
+  "keywords": [
+    "apache-httpd",
+    "access_logs",
+    "load testing"
+  ],
+  "dependencies" : {
+    "colors"   :  "*",
+    "lazy"     :  "*",
+    "konphyg"  :  "*"
+  }
+}
