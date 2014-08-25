@@ -46,7 +46,6 @@ Lazy(logfile.stdout)
     .map(String)
     .map(function (line) {
         // Chop the line
-        console.log('Parsing: ' + line);
         var parts = regexLogLine.exec(line);
         if ( parts != null ) { 
             var recDate = Date.parse(new Date(parts[2]+' '+parts[3]));
@@ -126,6 +125,7 @@ Lazy(logfile.stdout)
                         function(resp) {}
                     )
                     .on('socket', function() { timings[reqNum] = new Date().getTime(); })
+                    .on('error', function(e) { console.log('problem with request: ' + e.message); })
                     .on('response', function(resp) {
                         var diff = (new Date().getTime()) - timings[reqNum];
                         console.log(' - #' + reqNum + ' [DT=' + diff + 'ms, R=' + resp.statusCode + ']'); }
