@@ -24,6 +24,8 @@ try {
     process.exit(1);
 }
 
+console.log('Playing ' + config.source + ' against ' +  config.target.host + ':' + config.target.port);
+
 // Require the necessary modules
 var http = config.target.port == '443' ? require('https') : require('http');
 var Lazy = require('lazy');
@@ -31,7 +33,7 @@ var spawn = require('child_process').spawn;
 var logfile = spawn('cat', [config.source]);
 
 // Set up some variables
-var regexLogLine = /^[0-9a-f.:]+ - - \[([0-9]{2}\/[a-z]{3}\/[0-9]{4}):([0-9]{2}:[0-9]{2}:[0-9]{2}[^\]]*)\] \"([^\"]+)\" [0-9]+ [0-9]+/i;
+var regexLogLine = /^[0-9a-f.:]+ - ([^ ]+) \[([0-9]{2}\/[a-z]{3}\/[0-9]{4}):([0-9]{2}:[0-9]{2}:[0-9]{2}[^\]]*)\] \"([^\"]+)\" [0-9]+ [0-9]+/i;
 var regexHttpRequest = /^(GET|POST) (.+) HTTP\/(1.[0-1])$/i;
 var dtStart = Date.now();
 var dtDuration = 0;
@@ -44,9 +46,10 @@ Lazy(logfile.stdout)
     .map(String)
     .map(function (line) {
         // Chop the line
+        console.log('Parsing: ' + line);
         var parts = regexLogLine.exec(line);
         if ( parts != null ) { 
-            var recDate = Date.parse(new Date(parts[1]+' '+parts[2]));
+            var recDate = Date.parse(new Date(parts[2]+' '+parts[3]));
 
             // Determine the earliest datetime covered by log
             if (recDate < dtStart ) {
@@ -54,13 +57,14 @@ Lazy(logfile.stdout)
             }
 
             // Process the HTTP request portion
-            var httpRec = regexHttpRequest.exec(parts[3]);
+            var httpRec = regexHttpRequest.exec(parts[4]);
             if ( httpRec != null ) {
                 return {
                     datetime: recDate,
                     method: httpRec[1],
                     http: httpRec[3],
-                    uri: httpRec[2]
+                    uri: httpRec[2],
+                    username: parts[1]
                 };
             }
         } 
@@ -109,13 +113,15 @@ Lazy(logfile.stdout)
                 // FIRE ZE MISSILES!!...er, requests, I mean
                 requestSet[runOffset].forEach(function(item){
                     var reqNum = reqSeq++;
+                    console.log(item.username + ': ' + item.uri);
                     var req = http.request({
                             host: config.target.host,
                             port: config.target.port,
                             path: item.uri,
                             method: item.method,
                             reqStart: new Date().getTime(),
-                            agent: false
+                            agent: false,
+                            auth: item.username + ':'
                         }, 
                         function(resp) {}
                     )
