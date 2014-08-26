@@ -126,7 +126,13 @@ Lazy(logfile.stdout)
                         function(resp) {}
                     )
                     .on('socket', function() { timings[reqNum] = new Date().getTime(); })
-                    .on('error', function(e) { console.log(toString + ': ' + e.message); })
+                    .on('error', function(e) {
+                    	console.log(toString + ': ' + e.message);
+                    	if(e.message.indexOf('getaddrinfo ENOTFOUND') > -1 || e.message.indexOf('connect EMFILE') > -1) {
+                    		console.log('Exiting');
+                    		process.exit(1);
+                    	}
+                    })
                     .on('response', function(resp) {
                         var diff = (new Date().getTime()) - timings[reqNum];
                         console.log(toString + ' [DT=' + diff + 'ms, R=' + resp.statusCode + ']'); }
