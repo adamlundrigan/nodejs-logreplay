@@ -63,7 +63,7 @@ Lazy(logfile.stdout)
                     method: httpRec[1],
                     http: httpRec[3],
                     uri: httpRec[2],
-                    username: parts[1]
+                    username: parts[1] != '-' ? parts[1] : (!config.anonymousUser ? null : config.anonymousUser)
                 };
             }
         } 
@@ -112,7 +112,8 @@ Lazy(logfile.stdout)
                 // FIRE ZE MISSILES!!...er, requests, I mean
                 requestSet[runOffset].forEach(function(item){
                     var reqNum = reqSeq++;
-                    console.log(item.username + ': ' + item.uri);
+                    var toString = reqNum + ': ' + (item.username == null ? '' : (item.username + '@')) + item.uri;
+                    console.log(toString);
                     var req = http.request({
                             host: config.target.host,
                             port: config.target.port,
@@ -120,15 +121,15 @@ Lazy(logfile.stdout)
                             method: item.method,
                             reqStart: new Date().getTime(),
                             agent: false,
-                            auth: item.username + ':'
+                            auth: item.username == null ? null : (item.username + ':')
                         }, 
                         function(resp) {}
                     )
                     .on('socket', function() { timings[reqNum] = new Date().getTime(); })
-                    .on('error', function(e) { console.log('problem with request: ' + e.message); })
+                    .on('error', function(e) { console.log(toString + ': ' + e.message); })
                     .on('response', function(resp) {
                         var diff = (new Date().getTime()) - timings[reqNum];
-                        console.log(' - #' + reqNum + ' [DT=' + diff + 'ms, R=' + resp.statusCode + ']'); }
+                        console.log(toString + ' [DT=' + diff + 'ms, R=' + resp.statusCode + ']'); }
                     );
                     req.end();
                 });
