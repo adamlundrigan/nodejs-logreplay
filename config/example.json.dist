@@ -1,6 +1,7 @@
 {
   "source": "/path/to/your/access_log",
   "speedupFactor": "1",
+  "startOutputEnabled": false,
   "target": {
     "host": "target-system-hostname.com",
     "port": "80"
